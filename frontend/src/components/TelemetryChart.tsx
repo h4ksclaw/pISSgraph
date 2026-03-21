@@ -146,7 +146,7 @@ const TelemetryChart = ({ refreshInterval = 30 }: TelemetryChartProps) => {
     // Hide TradingView attribution link via CSS
     const style = document.createElement('style')
     style.textContent = `
-      div[dir="ltr"] a[href*="tradingview.com"] {
+      a[href*="tradingview.com"] {
         display: none !important;
       }
     `
