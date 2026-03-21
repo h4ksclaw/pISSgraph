@@ -4,23 +4,18 @@ import { format, parseISO } from 'date-fns'
 import { DefaultService, OpenAPI } from '../api'
 
 // Dynamically determine API base URL based on hostname
-// Preview: https://2.piss.h4ks.com -> https://2.pissapi.h4ks.com
-// Production: https://piss.h4ks.com -> https://pissapi.h4ks.com
 const getApiBaseUrl = (): string => {
-  // First check for explicit env var
   if (import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL
   }
   
   const hostname = window.location.hostname
   
-  // For h4ks.com domains, replace "piss" with "pissapi" in hostname
   if (hostname.includes('h4ks.com')) {
     const apiHostname = hostname.replace('piss', 'pissapi')
     return `https://${apiHostname}`
   }
   
-  // Local dev
   return 'http://localhost:8000'
 }
 
@@ -141,18 +136,21 @@ const TelemetryChart = ({ refreshInterval = 30 }: TelemetryChartProps) => {
 
     chart.timeScale().fitContent()
 
-    // Hide the TradingView attribution logo
-    const container = chartContainerRef.current
-    const attribution = container.querySelector('a[href*="tradingview.com"]')
-    if (attribution && attribution.parentElement) {
-      attribution.parentElement.style.display = 'none'
-    }
-
     // Double-click to fit content
+    const container = chartContainerRef.current
     const handleDoubleClick = () => {
       chart.timeScale().fitContent()
     }
     container.addEventListener('dblclick', handleDoubleClick)
+
+    // Hide TradingView attribution link via CSS
+    const style = document.createElement('style')
+    style.textContent = `
+      div[dir="ltr"] a[href*="tradingview.com"] {
+        display: none !important;
+      }
+    `
+    container.appendChild(style)
 
     return () => {
       container.removeEventListener('dblclick', handleDoubleClick)
